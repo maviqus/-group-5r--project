@@ -1,14 +1,14 @@
-{
+﻿{
   "users": [
-    { "id": 1, "name": "Nguy?n Van An", "email": "nguyenvanan@example.com" },
-    { "id": 2, "name": "Tr?n Th? B�nh", "email": "tranthib@example.com" },
-    { "id": 3, "name": "L� Van Cu?ng", "email": "levancuong@example.com" },
-    { "id": 4, "name": "Ph?m Th? Dung", "email": "phamthidung@example.com" },
-    { "id": 5, "name": "Ho�ng Van Em", "email": "hoangvanem@example.com" },
-    { "id": 6, "name": "Nguy?n Th? Phuong", "email": "nguyenthiphuong@example.com" },
-    { "id": 7, "name": "�? Van Giang", "email": "dovangiang@example.com" },
-    { "id": 8, "name": "Vu Th? Hoa", "email": "vuthihoa@example.com" },
-    { "id": 9, "name": "B�i Van �ch", "email": "buivanich@example.com" },
-    { "id": 10, "name": "�inh Th? Kim", "email": "dinhthikim@example.com" }
+    { "id": 1, "name": "Nguyễn Văn An", "email": "nguyenvanan@example.com" },
+    { "id": 2, "name": "Trần Thị Bình", "email": "tranthib@example.com" },
+    { "id": 3, "name": "Lê Văn Cường", "email": "levancuong@example.com" },
+    { "id": 4, "name": "Phạm Thị Dung", "email": "phamthidung@example.com" },
+    { "id": 5, "name": "Hoàng Văn Em", "email": "hoangvanem@example.com" },
+    { "id": 6, "name": "Nguyễn Thị Phương", "email": "nguyenthiphuong@example.com" },
+    { "id": 7, "name": "Đỗ Văn Giang", "email": "dovangiang@example.com" },
+    { "id": 8, "name": "Vũ Thị Hoa", "email": "vuthihoa@example.com" },
+    { "id": 9, "name": "Bùi Văn Ích", "email": "buivanich@example.com" },
+    { "id": 10, "name": "Đinh Thị Kim", "email": "dinhthikim@example.com" }
   ]
 }
