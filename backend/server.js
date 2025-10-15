@@ -1,42 +1,44 @@
+// server.js - unified Express server
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const userRoutes = require('./routes/user');
+const cors = require('cors');
 
-// Load environment variables
-dotenv.config();
+const userRoutes = require('./routes/user'); // routes mounted at /api
+const usersRouter = require('./routes/users'); // lightweight router mounted at /users
 
 const app = express();
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 
-// CORS middleware (cho phép frontend kết nối)
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-});
+// Read port and mongo uri (support both names)
+const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.MONGOURL;
 
-// Kết nối MongoDB Atlas
-mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-    .then(() => console.log('✅ Kết nối MongoDB Atlas thành công!'))
-    .catch((err) => console.error('❌ Lỗi kết nối MongoDB:', err));
+if (!MONGO_URI) {
+  console.error('❌ Missing MongoDB connection string. Set MONGO_URI or MONGODB_URI in your environment (.env)');
+  console.error('See backend/.env.example for an example.');
+  process.exit(1);
+}
+
+// Connect to MongoDB
+mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch(err => {
+    console.error('❌ MongoDB connection error:', err.message || err);
+    process.exit(1);
+  });
 
 // Routes
+// Mount controller-style routes at /api (returns { success, data, ... })
 app.use('/api', userRoutes);
+// Also mount simple routes at /users to keep compatibility with frontend that expects /users
+app.use('/users', usersRouter);
 
-// Route kiểm tra server
 app.get('/', (req, res) => {
-    res.json({ message: 'Server backend đang chạy!' });
+  res.json({ message: 'Backend API running', routes: ['/api/users', '/users'] });
 });
 
-// Khởi động server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server đang chạy trên cổng ${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

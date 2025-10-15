@@ -1,237 +1,34 @@
-# Group 5r Project - Node.js + React + MongoDB
+# Frontend (React) — User Management
 
-## 📌 Giới thiệu dự án
-Dự án quản lý người dùng (User Management) sử dụng:
-- **Backend**: Node.js + Express + MongoDB Atlas
-- **Frontend**: React (sẽ được phát triển bởi Sinh viên 2)
-- **Database**: MongoDB Atlas
-- **Version Control**: Git + GitHub
+This small React app demonstrates GET and POST requests to a backend API at http://localhost:3000/users using axios.
 
----
+Quick start (Windows PowerShell):
 
-## 👥 Phân công nhiệm vụ
-
-| Sinh viên | Vai trò | Nhiệm vụ chính |
-|-----------|---------|----------------|
-| **Sinh viên 1** | Backend Developer | Node.js + Express API |
-| **Sinh viên 2** | Frontend Developer | React UI |
-| **Sinh viên 3** | Database Developer | MongoDB Atlas Integration ✅ |
-
----
-
-## 🚀 Hướng dẫn cài đặt và chạy
-
-### 1. Clone repository
-\`\`\`bash
-git clone https://github.com/maviqus/-group-5r--project.git
-cd -group-5r--project
-\`\`\`
-
-### 2. Setup Backend
-
-#### Cài đặt dependencies
-\`\`\`bash
-cd backend
+```powershell
+cd "c:\hoạt động 4\frontend"
 npm install
-\`\`\`
 
-#### Cấu hình MongoDB
-Tạo file \`.env\` trong thư mục backend:
-\`\`\`env
-MONGODB_URI=mongodb+srv://NguyenXuanBach:<db_password>@cluster0.linphql.mongodb.net/groupDB?retryWrites=true&w=majority&appName=Cluster0
-PORT=3000
-\`\`\`
+# Run the fake REST API (json-server) on port 3000 from the frontend folder:
+# Requires json-server (bundled with node) - runs in background in this session with:
+# npx json-server --watch db.json --port 3000
 
-**Lưu ý**: Thay \`<db_password>\` bằng mật khẩu thực tế của MongoDB Atlas
+# Start the React dev server and point it to the backend.
+# PowerShell (recommended):
+# set the API URL and a different PORT for React (3001) then start:
+# $env:REACT_APP_API_URL = 'http://localhost:3000'; $env:PORT = '3001'; npm start
 
-#### Chạy server
-\`\`\`bash
-npm run dev    # Development với nodemon
-npm start      # Production
-\`\`\`
+# If you prefer single-run (cmd.exe style) on PowerShell use this form:
+# cmd /c "set REACT_APP_API_URL=http://localhost:3000 && set PORT=3001 && npm start"
 
-Server sẽ chạy tại: **http://localhost:3000**
+# Default start (will fall back to REACT_APP_API_URL=http://localhost:3000 if not set):
+npm start
+```
 
----
+Pages / Components:
+- `src/components/UserList.jsx` — fetches users with GET `http://localhost:3000/users` and displays them. It listens for a `user:added` event to refresh.
+- `src/components/AddUser.jsx` — posts new users to POST `http://localhost:3000/users` with JSON `{ name, email }`.
 
-## 📡 API Endpoints
-
-### Base URL
-\`\`\`
-http://localhost:3000/api
-\`\`\`
-
-### User API
-
-| Method | Endpoint | Mô tả |
-|--------|----------|-------|
-| **GET** | \`/users\` | Lấy tất cả users |
-| **GET** | \`/users/:id\` | Lấy user theo ID |
-| **POST** | \`/users\` | Tạo user mới |
-| **PUT** | \`/users/:id\` | Cập nhật user |
-| **DELETE** | \`/users/:id\` | Xóa user |
-
-**Chi tiết đầy đủ**: Xem file \`README_SinhVien3.md\`
-
----
-
-## 🔧 Công nghệ sử dụng
-
-### Backend
-- **Node.js**: JavaScript runtime
-- **Express.js**: Web framework
-- **MongoDB Atlas**: Cloud database
-- **Mongoose**: MongoDB ODM
-- **dotenv**: Environment variables
-- **nodemon**: Auto-restart development
-
-### Frontend (Coming soon)
-- **React**: UI library
-- **Axios**: HTTP client
-
----
-
-## 📂 Cấu trúc dự án
-
-\`\`\`
--group-5r--project/
-├── backend/
-│   ├── models/
-│   │   └── User.js
-│   ├── controllers/
-│   │   └── userController.js
-│   ├── routes/
-│   │   └── user.js
-│   ├── server.js
-│   ├── .env (không commit)
-│   ├── .env.example
-│   └── package.json
-├── frontend/          (coming soon)
-├── .gitignore
-├── README.md
-└── README_SinhVien3.md
-\`\`\`
-
----
-
-## ✅ Tiến độ dự án
-
-### Đã hoàn thành
-- [x] **Hoạt động 1**: Chuẩn bị môi trường & khởi tạo dự án
-- [x] **Hoạt động 2**: Cài đặt Node.js & cấu trúc backend
-- [x] **Hoạt động 5**: Tích hợp MongoDB Atlas ✅
-- [x] Tạo User model với Mongoose
-- [x] Implement CRUD đầy đủ (GET, POST, PUT, DELETE)
-- [x] Cấu hình server với MongoDB connection
-- [x] Validation và error handling
-- [x] Push branch database lên GitHub
-
-### Đang thực hiện
-- [ ] **Hoạt động 3**: Tạo REST API (Sinh viên 1)
-- [ ] **Hoạt động 4**: Khởi tạo frontend React (Sinh viên 2)
-
-### Sắp thực hiện
-- [ ] Kết nối frontend với backend
-- [ ] Test tích hợp
-- [ ] Merge branches vào main
-
----
-
-## 🧪 Testing
-
-### Test với cURL
-\`\`\`bash
-# GET all users
-curl http://localhost:3000/api/users
-
-# POST create user
-curl -X POST http://localhost:3000/api/users \\
-  -H "Content-Type: application/json" \\
-  -d '{"name":"Nguyễn Văn A","email":"test@example.com"}'
-
-# PUT update user
-curl -X PUT http://localhost:3000/api/users/<user_id> \\
-  -H "Content-Type: application/json" \\
-  -d '{"name":"Updated Name","email":"updated@example.com"}'
-
-# DELETE user
-curl -X DELETE http://localhost:3000/api/users/<user_id>
-\`\`\`
-
-### Test với Postman
-1. Import hoặc tạo collection mới
-2. Test các endpoints theo bảng API
-3. Kiểm tra response và status codes
-
----
-
-## 📚 Tài liệu chi tiết
-
-- **README_SinhVien3.md** - Công việc Database Developer (Sinh viên 3)
-- **backend/.env.example** - Template cấu hình MongoDB
-
----
-
-## 🔗 Git Workflow
-
-### Branches
-- \`main\` - Branch chính
-- \`backend\` - Backend development (Sinh viên 1)
-- \`frontend\` - Frontend development (Sinh viên 2)
-- \`database\` - Database integration (Sinh viên 3) ✅
-
-### Quy trình
-\`\`\`bash
-# Clone repo
-git clone <url>
-
-# Tạo branch riêng
-git checkout -b <branch-name>
-
-# Commit thường xuyên
-git add .
-git commit -m "Mô tả rõ ràng"
-
-# Push lên GitHub
-git push origin <branch-name>
-
-# Tạo Pull Request để merge
-\`\`\`
-
----
-
-## 💡 Troubleshooting
-
-### Lỗi kết nối MongoDB
-- Kiểm tra connection string trong \`.env\`
-- Kiểm tra mật khẩu database user
-- Kiểm tra Network Access (whitelist IP) trong MongoDB Atlas
-
-### Port đã được sử dụng
-\`\`\`bash
-# Tìm process
-lsof -i :3000
-
-# Kill process
-kill -9 <PID>
-\`\`\`
-
----
-
-## 👤 Repository & Contact
-
-**GitHub**: https://github.com/maviqus/-group-5r--project
-
-**Team Members**:
-- Sinh viên 1: Backend Developer
-- Sinh viên 2: Frontend Developer
-- Sinh viên 3: Database Developer (Nguyễn Xuân Bách) ✅
-
----
-
-## 📝 License
-Dự án học tập - Group 5r
-
----
-
-*Cập nhật lần cuối: 15/10/2025*
+Notes:
+- Ensure your backend server is running on the address in `REACT_APP_API_URL` (defaults to `http://localhost:3000`) and exposes the `/users` GET and POST endpoints.
+- If you see ERR_CONNECTION_REFUSED when opening `http://localhost:3000` in the browser after running `npm start`, that's likely because the React dev server started on another port (for example 3001) or the backend isn't running.
+- To avoid CORS issues, enable CORS on the backend or set the `REACT_APP_API_URL` to the correct backend URL.
