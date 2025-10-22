@@ -1,21 +1,24 @@
 {
+  {
     "name": "backend",
     "version": "1.0.0",
     "description": "Backend for SV3 - database-auth",
     "main": "server.js",
     "scripts": {
-        "start": "node server.js",
-        "dev": "nodemon server.js",
-        "seed": "node seed.js"
+      "start": "node server.js",
+      "dev": "nodemon server.js",
+      "seed": "node seed.js",
+      "test-mongo": "node test_mongo_client.js"
     },
     "dependencies": {
-        "bcrypt": "^5.1.0",
-        "dotenv": "^16.1.4",
-        "express": "^4.18.2",
-        "jsonwebtoken": "^9.0.0",
-        "mongoose": "^7.5.0"
+      "bcrypt": "^5.1.0",
+      "dotenv": "^16.1.4",
+      "express": "^4.18.2",
+      "jsonwebtoken": "^9.0.0",
+      "mongoose": "^7.5.0",
+      "mongodb": "^5.11.0"
     },
     "devDependencies": {
-        "nodemon": "^2.0.22"
+      "nodemon": "^2.0.22"
     }
-}
+  }
