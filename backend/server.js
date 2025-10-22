@@ -24,8 +24,8 @@ mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
-    .then(() => console.log('✅ Kết nối MongoDB Atlas thành công!'))
-    .catch((err) => console.error('❌ Lỗi kết nối MongoDB:', err));
+    .then(() => console.log('✅ Kết nối MongoDB Atlas thành công! - server.js:27'))
+    .catch((err) => console.error('❌ Lỗi kết nối MongoDB: - server.js:28', err));
 
 // Routes
 app.use('/api', userRoutes);
@@ -38,5 +38,5 @@ app.get('/', (req, res) => {
 // Khởi động server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 Server đang chạy trên cổng ${PORT}`);
+    console.log(`🚀 Server đang chạy trên cổng ${PORT} - server.js:41`);
 });

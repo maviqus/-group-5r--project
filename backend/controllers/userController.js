@@ -1,5 +1,8 @@
 const User = require('../models/User');
 
+// Mảng tạm nếu chưa dùng MongoDB
+let users = [];
+
 // GET: Lấy tất cả users
 exports.getUsers = async (req, res) => {
     try {
@@ -82,76 +85,21 @@ exports.createUser = async (req, res) => {
     }
 };
 
-// PUT: Cập nhật user
-exports.updateUser = async (req, res) => {
-    try {
-        const { name, email } = req.body;
-
-        // Kiểm tra user có tồn tại không
-        const user = await User.findById(req.params.id);
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'Không tìm thấy người dùng'
-            });
-        }
-
-        // Nếu update email, kiểm tra email mới có trùng không
-        if (email && email !== user.email) {
-            const existingUser = await User.findOne({ email });
-            if (existingUser) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Email đã được sử dụng bởi người dùng khác'
-                });
-            }
-        }
-
-        // Cập nhật user
-        const updatedUser = await User.findByIdAndUpdate(
-            req.params.id,
-            { name, email },
-            { new: true, runValidators: true }
-        );
-
-        res.status(200).json({
-            success: true,
-            message: 'Cập nhật người dùng thành công',
-            data: updatedUser
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Lỗi khi cập nhật người dùng',
-            error: error.message
-        });
+// PUT: sửa user (sử dụng mảng tạm nếu chưa có MongoDB)
+exports.updateUser = (req, res) => {
+    const { id } = req.params;
+    const index = users.findIndex(u => u.id == id);
+    if (index !== -1) {
+        users[index] = { ...users[index], ...req.body };
+        res.json(users[index]);
+    } else {
+        res.status(404).json({ message: "User not found" });
     }
 };
 
-// DELETE: Xóa user
-exports.deleteUser = async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'Không tìm thấy người dùng'
-            });
-        }
-
-        await User.findByIdAndDelete(req.params.id);
-
-        res.status(200).json({
-            success: true,
-            message: 'Xóa người dùng thành công',
-            data: {}
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Lỗi khi xóa người dùng',
-            error: error.message
-        });
-    }
+// DELETE: xóa user (sử dụng mảng tạm nếu chưa có MongoDB)
+exports.deleteUser = (req, res) => {
+    const { id } = req.params;
+    users = users.filter(u => u.id != id);
+    res.json({ message: "User deleted" });
 };
