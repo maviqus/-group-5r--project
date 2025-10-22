@@ -12,6 +12,11 @@ exports.seedUsers = (req, res) => {
     res.json({ message: 'Seeded users', data: users });
 };
 
+// Debug: trả về mảng users in-memory (dùng để test)
+exports.getInMemoryUsers = (req, res) => {
+    res.json({ data: users });
+};
+
 // GET: Lấy tất cả users
 exports.getUsers = async (req, res) => {
     try {
