@@ -59,7 +59,13 @@ async function seedDatabase() {
   try {
     // Kết nối MongoDB
     console.log('\n🔄 Đang kết nối MongoDB Atlas...');
-    await mongoose.connect(process.env.MONGODB_URI);
+    // Support both environment variable names to avoid docs mismatch
+    const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+    if (!mongoUri) {
+      console.error('\n❌ Không tìm thấy connection string MongoDB. Vui lòng đặt biến môi trường MONGODB_URI hoặc MONGO_URI.');
+      process.exit(1);
+    }
+    await mongoose.connect(mongoUri);
     console.log('✅ Kết nối MongoDB thành công!\n');
 
     // Xóa dữ liệu cũ (nếu có)
