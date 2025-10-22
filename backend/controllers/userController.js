@@ -101,6 +101,8 @@ exports.createUser = async (req, res) => {
 
 // PUT: sửa user (sử dụng mảng tạm nếu chưa có MongoDB)
 exports.updateUser = (req, res) => {
+    // Debug log to see incoming params and body
+    console.log('[debug] updateUser called  params: - userController.js:105', req.params, 'body:', req.body);
     const { id } = req.params;
     const index = users.findIndex(u => u.id == id);
     if (index !== -1) {
@@ -113,6 +115,7 @@ exports.updateUser = (req, res) => {
 
 // DELETE: xóa user (sử dụng mảng tạm nếu chưa có MongoDB)
 exports.deleteUser = (req, res) => {
+    console.log('[debug] deleteUser called  params: - userController.js:118', req.params);
     const { id } = req.params;
     users = users.filter(u => u.id != id);
     res.json({ message: "User deleted" });
