@@ -3,6 +3,15 @@ const User = require('../models/User');
 // Mảng tạm nếu chưa dùng MongoDB
 let users = [];
 
+// Seed: thêm vài users để test (mảng tạm)
+exports.seedUsers = (req, res) => {
+    users = [
+        { id: 'u1', name: 'Nguyen Van A', email: 'a@example.com' },
+        { id: 'u2', name: 'Tran Thi B', email: 'b@example.com' }
+    ];
+    res.json({ message: 'Seeded users', data: users });
+};
+
 // GET: Lấy tất cả users
 exports.getUsers = async (req, res) => {
     try {
