@@ -18,5 +18,8 @@ mongoose.connect(MONGO_URI, {
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 
+// Health check for Render / load balancers
+app.get('/', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV || 'development' }));
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
