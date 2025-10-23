@@ -14,4 +14,8 @@ router.post('/signup', userController.signup);
 router.post('/login', userController.login);
 router.post('/logout', userController.logout);
 
+// Profile routes (cần xác thực)
+router.get('/profile', userController.authenticate, userController.getProfile);
+router.put('/profile', userController.authenticate, userController.updateProfile);
+
 module.exports = router;

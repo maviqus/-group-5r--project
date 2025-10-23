@@ -169,3 +169,41 @@ exports.logout = (req, res) => {
     // Backend không lưu token, chỉ mô phỏng
     res.json({ success: true, message: 'Đăng xuất thành công. Hãy xóa token ở phía client.' });
 };
+
+// Middleware xác thực JWT
+exports.authenticate = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ success: false, message: 'Thiếu token xác thực' });
+    jwt.verify(token, process.env.JWT_SECRET || 'secret', (err, user) => {
+        if (err) return res.status(403).json({ success: false, message: 'Token không hợp lệ' });
+        req.user = user;
+        next();
+    });
+};
+
+// GET /profile: Xem thông tin cá nhân
+exports.getProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.userId).select('-password');
+        if (!user) return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng' });
+        res.json({ success: true, data: user });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Lỗi lấy thông tin cá nhân', error: error.message });
+    }
+};
+
+// PUT /profile: Cập nhật thông tin cá nhân
+exports.updateProfile = async (req, res) => {
+    try {
+        const updates = req.body;
+        if (updates.password) {
+            updates.password = await bcrypt.hash(updates.password, 10);
+        }
+        const user = await User.findByIdAndUpdate(req.user.userId, updates, { new: true, runValidators: true }).select('-password');
+        if (!user) return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng' });
+        res.json({ success: true, message: 'Cập nhật thành công', data: user });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Lỗi cập nhật thông tin cá nhân', error: error.message });
+    }
+};
