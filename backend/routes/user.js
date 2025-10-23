@@ -9,4 +9,9 @@ router.get('/users/in-memory', userController.getInMemoryUsers);
 router.put('/users/:id', userController.updateUser);   // PUT
 router.delete('/users/:id', userController.deleteUser); // DELETE
 
+// Auth routes
+router.post('/signup', userController.signup);
+router.post('/login', userController.login);
+router.post('/logout', userController.logout);
+
 module.exports = router;

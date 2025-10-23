@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 // Mảng tạm nếu chưa dùng MongoDB
 let users = [];
@@ -102,7 +104,7 @@ exports.createUser = async (req, res) => {
 // PUT: sửa user (sử dụng mảng tạm nếu chưa có MongoDB)
 exports.updateUser = (req, res) => {
     // Debug log to see incoming params and body
-    console.log('[debug] updateUser called  params: - userController.js:105', req.params, 'body:', req.body);
+    console.log('[debug] updateUser called  params: - userController.js:107', req.params, 'body:', req.body);
     const { id } = req.params;
     const index = users.findIndex(u => u.id == id);
     if (index !== -1) {
@@ -115,8 +117,55 @@ exports.updateUser = (req, res) => {
 
 // DELETE: xóa user (sử dụng mảng tạm nếu chưa có MongoDB)
 exports.deleteUser = (req, res) => {
-    console.log('[debug] deleteUser called  params: - userController.js:118', req.params);
+    console.log('[debug] deleteUser called  params: - userController.js:120', req.params);
     const { id } = req.params;
     users = users.filter(u => u.id != id);
     res.json({ message: "User deleted" });
+};
+
+// Đăng ký (Sign Up)
+exports.signup = async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+        if (!name || !email || !password) {
+            return res.status(400).json({ success: false, message: 'Thiếu thông tin đăng ký' });
+        }
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: 'Email đã tồn tại' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = await User.create({ name, email, password: hashedPassword });
+        res.status(201).json({ success: true, message: 'Đăng ký thành công', data: { id: user._id, name: user.name, email: user.email } });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Lỗi đăng ký', error: error.message });
+    }
+};
+
+// Đăng nhập (Login)
+exports.login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: 'Thiếu thông tin đăng nhập' });
+        }
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ success: false, message: 'Email không tồn tại' });
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ success: false, message: 'Sai mật khẩu' });
+        }
+        const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET || 'secret', { expiresIn: '1h' });
+        res.json({ success: true, message: 'Đăng nhập thành công', token });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Lỗi đăng nhập', error: error.message });
+    }
+};
+
+// Đăng xuất (Logout) - phía client chỉ cần xóa token
+exports.logout = (req, res) => {
+    // Backend không lưu token, chỉ mô phỏng
+    res.json({ success: true, message: 'Đăng xuất thành công. Hãy xóa token ở phía client.' });
 };
