@@ -9,7 +9,7 @@ app.use(express.json());
 connect().then(() => console.log('MongoDB connected (app)')).catch(err => console.error('MongoDB connection error (app):', err));
 
 // Import routes
-const authRoutes = require('./routes/auth');
+const authRoutes = require('./routes/auth.route');
 app.use('/api/auth', authRoutes);
 
 // Health
