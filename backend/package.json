@@ -9,8 +9,10 @@
         "test-mongo": "node test_mongo_client.js"
     },
     "dependencies": {
+        "bcrypt": "^6.0.0",
         "dotenv": "^16.1.4",
         "express": "^4.18.2",
+        "jsonwebtoken": "^9.0.2",
         "mongoose": "^7.5.0"
     },
     "devDependencies": {
