@@ -9,8 +9,8 @@ app.use(express.json());
 connect().then(() => console.log('MongoDB connected (app)')).catch(err => console.error('MongoDB connection error (app):', err));
 
 // Import routes
-const authRoutes = require('./routes/auth');
-app.use('/api/auth', authRoutes);
+// const authRoutes = require('./routes/auth');
+// app.use('/api/auth', authRoutes);
 
 // Health
 app.get('/', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV || 'development' }));
