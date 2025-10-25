@@ -2,6 +2,8 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Register from './components/Register';
 import Login from './components/Login';
+import ProtectedRoute from './components/ProtectedRoute';
+import Profile from './components/Profile';
 
 function Dashboard() {
     const token = localStorage.getItem('token');
@@ -37,7 +39,8 @@ function App() {
                 <nav style={{ padding: '10px', backgroundColor: '#f0f0f0', marginBottom: '20px' }}>
                     <Link to="/" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Home</Link>
                     <Link to="/register" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Đăng ký</Link>
-                    <Link to="/login" style={{ textDecoration: 'none', color: '#007bff' }}>Đăng nhập</Link>
+                    <Link to="/login" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Đăng nhập</Link>
+                    <Link to="/profile" style={{ textDecoration: 'none', color: '#007bff' }}>Profile</Link>
                 </nav>
                 <Routes>
                     <Route path="/" element={
@@ -50,6 +53,11 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/register-success" element={<RegisterSuccess />} />
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/profile" element={
+                        <ProtectedRoute>
+                            <Profile />
+                        </ProtectedRoute>
+                    } />
                 </Routes>
             </div>
         </Router>
