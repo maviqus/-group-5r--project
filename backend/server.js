@@ -1,11 +1,11 @@
 const app = require('./app');
 
-const PORT = process.env.PORT || 4002;
-const HOST = 'localhost';
+const PORT = process.env.PORT || 4000;
+const HOST = process.env.HOST || '0.0.0.0';
 console.log('Starting server on', HOST, 'port', PORT);
 const server = app.listen(PORT, HOST, () => {
-    console.log(`Server running on ${HOST}:${PORT}`);
-    console.log('Server started successfully');
+  console.log(`Server running on ${HOST}:${PORT}`);
+  console.log('Server started successfully');
 }); server.on('error', (err) => {
     console.error('Server error:', err);
     process.exit(1);
