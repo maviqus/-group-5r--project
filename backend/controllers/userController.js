@@ -40,6 +40,34 @@ const updateProfile = async (req, res) => {
   }
 };
 
+// @desc    Upload avatar
+// @route   PUT /api/profile/avatar
+// @access  Private
+const uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'Vui lòng chọn file ảnh' });
+    }
+
+    const user = await User.findById(req.user._id);
+    
+    if (user) {
+      user.avatarUrl = req.file.path; // Cloudinary URL
+      await user.save();
+      
+      res.json({
+        message: 'Upload avatar thành công',
+        avatarUrl: user.avatarUrl
+      });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Upload avatar error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 // @desc    Get all users
 // @route   GET /api/users
 // @access  Private/Admin
@@ -74,6 +102,7 @@ const deleteUser = async (req, res) => {
 module.exports = {
   getProfile,
   updateProfile,
+  uploadAvatar,
   getAllUsers,
   deleteUser,
 };
