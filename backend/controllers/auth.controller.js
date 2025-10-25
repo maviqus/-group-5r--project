@@ -77,11 +77,29 @@ const forgotPassword = async (req, res) => {
         // Tạo reset URL (sử dụng HashRouter)
         const resetUrl = `${process.env.FRONTEND_URL}/#/reset-password/${resetToken}`;
 
-        // Cấu hình nodemailer với secure connection
+        // Check if running on Render (production) - Skip actual email sending due to SMTP port blocking
+        if (process.env.RENDER === 'true' || process.env.NODE_ENV === 'production') {
+            console.log('===========================================');
+            console.log('📧 EMAIL WOULD BE SENT (Mock for Render):');
+            console.log('To:', user.email);
+            console.log('Subject: 🔐 Yêu cầu đặt lại mật khẩu');
+            console.log('Reset URL:', resetUrl);
+            console.log('Token expires in: 10 minutes');
+            console.log('===========================================');
+            
+            // Return success without actually sending email
+            return res.status(200).json({ 
+                message: 'Email đặt lại mật khẩu đã được gửi',
+                resetUrl: resetUrl, // Include URL in response for testing
+                note: 'Demo mode: Email not actually sent. Use the resetUrl directly.'
+            });
+        }
+
+        // For local development: Actually send email
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
             port: 587,
-            secure: false, // true for 465, false for other ports
+            secure: false,
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASSWORD
