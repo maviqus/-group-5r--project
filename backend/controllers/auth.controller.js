@@ -81,7 +81,7 @@ const forgotPassword = async (req, res) => {
         // Gửi email bằng SendGrid (works on Render)
         if (process.env.SENDGRID_API_KEY) {
             sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-            
+
             const msg = {
                 to: user.email,
                 from: process.env.EMAIL_USER, // Must be verified sender in SendGrid
@@ -137,12 +137,12 @@ const forgotPassword = async (req, res) => {
 
             await sgMail.send(msg);
             console.log('✅ Email sent successfully via SendGrid to:', user.email);
-            
-            res.status(200).json({ message: 'Email đặt lại mật khẩu đã được gửi' });
+
+            return res.status(200).json({ message: 'Email đặt lại mật khẩu đã được gửi' });
         } else {
             // Fallback: Use nodemailer for local development
             console.log('⚠️ SENDGRID_API_KEY not found, using nodemailer...');
-            
+
             const transporter = nodemailer.createTransport({
                 host: 'smtp.gmail.com',
                 port: 587,
@@ -211,11 +211,9 @@ const forgotPassword = async (req, res) => {
 
             await transporter.sendMail(mailOptions);
             console.log('✅ Email sent successfully via Gmail SMTP to:', user.email);
-            
-            res.status(200).json({ message: 'Email đặt lại mật khẩu đã được gửi' });
-        }
 
-        res.status(200).json({ message: 'Email đặt lại mật khẩu đã được gửi' });
+            return res.status(200).json({ message: 'Email đặt lại mật khẩu đã được gửi' });
+        }
     } catch (error) {
         console.error('Forgot password error:', error);
         res.status(500).json({ message: 'Lỗi server', error: error.message });
