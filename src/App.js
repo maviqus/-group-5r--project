@@ -37,12 +37,6 @@ function RegisterSuccess() {
 function App() {
     const [isLoggedIn, setIsLoggedIn] = React.useState(!!localStorage.getItem('token'));
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        setIsLoggedIn(false);
-        window.location.href = '/login';
-    };
-
     React.useEffect(() => {
         const checkLogin = () => {
             setIsLoggedIn(!!localStorage.getItem('token'));
@@ -65,21 +59,7 @@ function App() {
                     ) : (
                         <>
                             <Link to="/profile" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Profile</Link>
-                            <Link to="/admin" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Admin</Link>
-                            <button
-                                onClick={handleLogout}
-                                style={{
-                                    backgroundColor: '#dc3545',
-                                    color: 'white',
-                                    border: 'none',
-                                    padding: '8px 16px',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '14px'
-                                }}
-                            >
-                                Đăng Xuất
-                            </button>
+                            <Link to="/admin" style={{ textDecoration: 'none', color: '#007bff' }}>Admin</Link>
                         </>
                     )}
                 </nav>
