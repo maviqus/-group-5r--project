@@ -74,8 +74,8 @@ const forgotPassword = async (req, res) => {
         user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 phút
         await user.save();
 
-        // Tạo reset URL
-        const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+        // Tạo reset URL (sử dụng HashRouter)
+        const resetUrl = `${process.env.FRONTEND_URL}/#/reset-password/${resetToken}`;
 
         // Cấu hình nodemailer
         const transporter = nodemailer.createTransport({
@@ -87,15 +87,57 @@ const forgotPassword = async (req, res) => {
         });
 
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: `"Auth App" <${process.env.EMAIL_USER}>`,
             to: user.email,
-            subject: 'Reset Password Request',
+            subject: '🔐 Yêu cầu đặt lại mật khẩu - Auth App',
             html: `
-                <h1>Bạn đã yêu cầu đặt lại mật khẩu</h1>
-                <p>Click vào link sau để đặt lại mật khẩu (có hiệu lực trong 10 phút):</p>
-                <a href="${resetUrl}">${resetUrl}</a>
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+                        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+                        .button { display: inline-block; padding: 15px 30px; background: #667eea; color: white !important; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+                        .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+                        .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>🔐 Đặt lại mật khẩu</h1>
+                        </div>
+                        <div class="content">
+                            <p>Xin chào <strong>${user.name}</strong>,</p>
+                            <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>
+                            <p>Click vào nút bên dưới để đặt lại mật khẩu:</p>
+                            <p style="text-align: center;">
+                                <a href="${resetUrl}" class="button">Đặt lại mật khẩu</a>
+                            </p>
+                            <p>Hoặc copy link sau vào trình duyệt:</p>
+                            <p style="word-break: break-all; background: #fff; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                <a href="${resetUrl}">${resetUrl}</a>
+                            </p>
+                            <div class="warning">
+                                <strong>⚠️ Lưu ý:</strong>
+                                <ul>
+                                    <li>Link này chỉ có hiệu lực trong <strong>10 phút</strong></li>
+                                    <li>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này</li>
+                                    <li>Không chia sẻ link này với bất kỳ ai</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <p>Email này được gửi từ Auth App</p>
+                            <p>Nếu bạn cần hỗ trợ, vui lòng liên hệ: ${process.env.EMAIL_USER}</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
             `
-        };
+        });
 
         await transporter.sendMail(mailOptions);
 
