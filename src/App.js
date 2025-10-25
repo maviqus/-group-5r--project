@@ -6,6 +6,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import Profile from './components/Profile';
 import AdminUserList from './components/AdminUserList';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 
 function Dashboard() {
     const token = localStorage.getItem('token');
@@ -72,6 +74,8 @@ function App() {
                     } />
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password/:token" element={<ResetPassword />} />
                     <Route path="/register-success" element={<RegisterSuccess />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/profile" element={

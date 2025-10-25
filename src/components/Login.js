@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -55,6 +55,11 @@ const Login = () => {
                 </div>
                 <button type="submit">Đăng nhập</button>
             </form>
+            <p style={{ marginTop: '15px' }}>
+                <Link to="/forgot-password" style={{ color: '#007bff', textDecoration: 'none' }}>
+                    Quên mật khẩu?
+                </Link>
+            </p>
             {message && <p>{message}</p>}
         </div>
     );

@@ -50,11 +50,11 @@ const uploadAvatar = async (req, res) => {
     }
 
     const user = await User.findById(req.user._id);
-    
+
     if (user) {
       user.avatarUrl = req.file.path; // Cloudinary URL
       await user.save();
-      
+
       res.json({
         message: 'Upload avatar thành công',
         avatarUrl: user.avatarUrl

@@ -11,6 +11,8 @@ const Profile = () => {
         name: '',
         avatarUrl: ''
     });
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [uploadLoading, setUploadLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -70,6 +72,44 @@ const Profile = () => {
     const handleLogout = () => {
         localStorage.removeItem('token');
         navigate('/login');
+    };
+
+    const handleFileChange = (e) => {
+        setSelectedFile(e.target.files[0]);
+    };
+
+    const handleUploadAvatar = async () => {
+        if (!selectedFile) {
+            alert('Vui lòng chọn file ảnh!');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('avatar', selectedFile);
+
+        setUploadLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.put(
+                'https://group-5r-project-9jdh.onrender.com/api/profile/avatar',
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
+            setUser(response.data);
+            setSelectedFile(null);
+            alert('Upload avatar thành công!');
+        } catch (err) {
+            setError('Không thể upload avatar');
+            console.error(err);
+            alert('Lỗi upload avatar: ' + (err.response?.data?.message || err.message));
+        } finally {
+            setUploadLoading(false);
+        }
     };
 
     if (loading) return (
@@ -172,6 +212,55 @@ const Profile = () => {
                             </tr>
                         </tbody>
                     </table>
+
+                    <div style={{
+                        backgroundColor: '#f8f9fa',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        marginBottom: '30px',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                    }}>
+                        <h3 style={{ marginTop: 0, marginBottom: '15px', color: '#333' }}>Upload Avatar</h3>
+                        <div style={{ marginBottom: '15px' }}>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                style={{
+                                    padding: '8px',
+                                    border: '1px solid #ced4da',
+                                    borderRadius: '4px',
+                                    backgroundColor: 'white'
+                                }}
+                            />
+                        </div>
+                        <button
+                            onClick={handleUploadAvatar}
+                            disabled={!selectedFile || uploadLoading}
+                            style={{
+                                backgroundColor: !selectedFile || uploadLoading ? '#6c757d' : '#17a2b8',
+                                color: 'white',
+                                border: 'none',
+                                padding: '10px 20px',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                cursor: !selectedFile || uploadLoading ? 'not-allowed' : 'pointer',
+                                transition: 'background-color 0.3s'
+                            }}
+                            onMouseOver={(e) => {
+                                if (!(!selectedFile || uploadLoading)) {
+                                    e.target.style.backgroundColor = '#138496';
+                                }
+                            }}
+                            onMouseOut={(e) => {
+                                if (!(!selectedFile || uploadLoading)) {
+                                    e.target.style.backgroundColor = '#17a2b8';
+                                }
+                            }}
+                        >
+                            {uploadLoading ? 'Đang upload...' : 'Upload Avatar'}
+                        </button>
+                    </div>
 
                     <div style={{ textAlign: 'center' }}>
                         <button
