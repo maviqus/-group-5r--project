@@ -14,7 +14,11 @@ async function connect() {
       useUnifiedTopology: true,
     }).then(mongooseInstance => {
       cached.conn = mongooseInstance;
+      console.log('MongoDB connected successfully');
       return cached.conn;
+    }).catch(err => {
+      console.error('MongoDB connection error:', err);
+      throw err;
     });
   }
   return cached.promise;

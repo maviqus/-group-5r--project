@@ -20,14 +20,12 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // const response = await axios.post('https://group-5r-project.onrender.com/api/auth/login', formData);
-            // Tạm thời bỏ API call để test UI
+            const response = await axios.post('https://group-5r-project-9jdh.onrender.com/api/auth/login', formData);
             setMessage('Đăng nhập thành công!');
-            // Lưu token giả vào localStorage
-            const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MzQ1Njc4OTBhYzEyMzQ1Njc4OTBhIiwiaWF0IjoxNzMxMjM0NTY3LCJleHAiOjE3MzEyNzA1Njd9.fake_signature_for_testing';
-            localStorage.setItem('token', fakeToken);
+            // Lưu token vào localStorage
+            localStorage.setItem('token', response.data.token);
             // Chuyển hướng
-            navigate('/dashboard');
+            navigate('/profile');
         } catch (error) {
             setMessage(error.response?.data?.message || 'Lỗi đăng nhập');
         }

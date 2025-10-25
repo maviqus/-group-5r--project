@@ -21,11 +21,10 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // const response = await axios.post('https://group-5r-project.onrender.com/api/auth/signup', formData);
-            // Tạm thời bỏ API call để test UI
+            const response = await axios.post('https://group-5r-project-9jdh.onrender.com/api/auth/register', formData);
             setMessage('Đăng ký thành công!');
-            // Chuyển hướng đến trang success
-            navigate('/register-success');
+            // Chuyển hướng đến trang login
+            navigate('/login');
         } catch (error) {
             setMessage(error.response?.data?.message || 'Lỗi đăng ký');
         }
