@@ -10,7 +10,9 @@ connect().then(() => console.log('MongoDB connected (app)')).catch(err => consol
 
 // Import routes
 const authRoutes = require('./routes/auth.route');
+const userRoutes = require('./routes/user.route');
 app.use('/api/auth', authRoutes);
+app.use('/api', userRoutes);
 
 // Health
 app.get('/', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV || 'development' }));
