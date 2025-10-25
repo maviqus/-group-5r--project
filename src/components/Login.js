@@ -24,8 +24,8 @@ const Login = () => {
             setMessage('Đăng nhập thành công!');
             // Lưu token vào localStorage
             localStorage.setItem('token', response.data.token);
-            // Chuyển hướng
-            navigate('/profile');
+            // Force reload để cập nhật nav bar
+            window.location.href = '/profile';
         } catch (error) {
             setMessage(error.response?.data?.message || 'Lỗi đăng nhập');
         }

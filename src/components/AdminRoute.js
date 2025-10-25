@@ -10,10 +10,16 @@ const AdminRoute = ({ children }) => {
 
     try {
         const decoded = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        if (decoded.exp < currentTime) {
+            localStorage.removeItem('token');
+            return <Navigate to="/login" replace />;
+        }
         if (decoded.role !== 'admin') {
             return <Navigate to="/" replace />;
         }
     } catch (error) {
+        localStorage.removeItem('token');
         return <Navigate to="/login" replace />;
     }
 

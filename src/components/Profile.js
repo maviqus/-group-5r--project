@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Profile = () => {
@@ -10,6 +11,7 @@ const Profile = () => {
         name: '',
         avatarUrl: ''
     });
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -63,6 +65,11 @@ const Profile = () => {
             setError('Không thể cập nhật profile');
             console.error(err);
         }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/login');
     };
 
     if (loading) return (
@@ -177,12 +184,30 @@ const Profile = () => {
                                 borderRadius: '6px',
                                 fontSize: '16px',
                                 cursor: 'pointer',
-                                transition: 'background-color 0.3s'
+                                transition: 'background-color 0.3s',
+                                marginRight: '10px'
                             }}
                             onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
                             onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
                         >
                             Chỉnh Sửa Thông Tin
+                        </button>
+                        <button
+                            onClick={handleLogout}
+                            style={{
+                                backgroundColor: '#dc3545',
+                                color: 'white',
+                                border: 'none',
+                                padding: '12px 24px',
+                                borderRadius: '6px',
+                                fontSize: '16px',
+                                cursor: 'pointer',
+                                transition: 'background-color 0.3s'
+                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#c82333'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#dc3545'}
+                        >
+                            Đăng Xuất
                         </button>
                     </div>
                 </div>

@@ -1,5 +1,6 @@
 const app = require('./app');
 
+// Trigger redeploy
 const PORT = process.env.PORT || 4000;
 const HOST = process.env.HOST || '0.0.0.0';
 console.log('Starting server on', HOST, 'port', PORT);

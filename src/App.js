@@ -35,15 +35,53 @@ function RegisterSuccess() {
 }
 
 function App() {
+    const [isLoggedIn, setIsLoggedIn] = React.useState(!!localStorage.getItem('token'));
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+        window.location.href = '/login';
+    };
+
+    React.useEffect(() => {
+        const checkLogin = () => {
+            setIsLoggedIn(!!localStorage.getItem('token'));
+        };
+
+        window.addEventListener('storage', checkLogin);
+        return () => window.removeEventListener('storage', checkLogin);
+    }, []);
+
     return (
         <Router>
             <div className="App">
                 <nav style={{ padding: '10px', backgroundColor: '#f0f0f0', marginBottom: '20px' }}>
                     <Link to="/" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Home</Link>
-                    <Link to="/register" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Đăng ký</Link>
-                    <Link to="/login" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Đăng nhập</Link>
-                    <Link to="/profile" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Profile</Link>
-                    <Link to="/admin" style={{ textDecoration: 'none', color: '#007bff' }}>Admin</Link>
+                    {!isLoggedIn ? (
+                        <>
+                            <Link to="/register" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Đăng ký</Link>
+                            <Link to="/login" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Đăng nhập</Link>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/profile" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Profile</Link>
+                            <Link to="/admin" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Admin</Link>
+                            <button
+                                onClick={handleLogout}
+                                style={{
+                                    backgroundColor: '#dc3545',
+                                    color: 'white',
+                                    border: 'none',
+                                    padding: '8px 16px',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '14px'
+                                }}
+                            >
+                                Đăng Xuất
+                            </button>
+                        </>
+                    )}
                 </nav>
                 <Routes>
                     <Route path="/" element={
