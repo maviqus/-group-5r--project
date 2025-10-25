@@ -6,7 +6,10 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    avatar: ''
+  });
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -18,7 +21,10 @@ const Profile = () => {
           }
         });
         setUser(response.data);
-        setName(response.data.name);
+        setFormData({
+          name: response.data.name || '',
+          avatar: response.data.avatar || ''
+        });
       } catch (err) {
         setError('Không thể tải thông tin profile');
         console.error(err);
@@ -30,12 +36,20 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put('https://group-5r-project-9jdh.onrender.com/api/profile',
-        { name },
+        formData,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -44,39 +58,238 @@ const Profile = () => {
       );
       setUser(response.data);
       setIsEditing(false);
-      alert('Cập nhật thành công!');
+      alert('Cập nhật thông tin thành công!');
     } catch (err) {
       setError('Không thể cập nhật profile');
       console.error(err);
     }
   };
 
-  if (loading) return <div>Đang tải...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (loading) return (
+    <div style={{ textAlign: 'center', padding: '50px' }}>
+      <div>Đang tải thông tin...</div>
+    </div>
+  );
+
+  if (error) return (
+    <div style={{ textAlign: 'center', padding: '50px', color: 'red' }}>
+      <div>{error}</div>
+    </div>
+  );
 
   return (
-    <div className="profile-container">
-      <h2>Thông tin cá nhân</h2>
-      <div className="profile-info">
-        <p><strong>Email:</strong> {user.email}</p>
-        <p><strong>Tên:</strong> {user.name}</p>
-        {user.avatar && <img src={user.avatar} alt="Avatar" style={{width: '100px', height: '100px'}} />}
-      </div>
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
+      <h1 style={{ textAlign: 'center', color: '#333', marginBottom: '30px' }}>
+        Thông Tin Cá Nhân
+      </h1>
 
       {!isEditing ? (
-        <button onClick={() => setIsEditing(true)}>Chỉnh sửa tên</button>
+        <div>
+          <table style={{
+            width: '100%',
+            borderCollapse: 'collapse',
+            marginBottom: '30px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            borderRadius: '8px',
+            overflow: 'hidden'
+          }}>
+            <thead>
+              <tr style={{ backgroundColor: '#f8f9fa' }}>
+                <th style={{
+                  padding: '15px',
+                  textAlign: 'left',
+                  borderBottom: '2px solid #dee2e6',
+                  fontWeight: 'bold',
+                  color: '#495057'
+                }}>Thông Tin</th>
+                <th style={{
+                  padding: '15px',
+                  textAlign: 'left',
+                  borderBottom: '2px solid #dee2e6',
+                  fontWeight: 'bold',
+                  color: '#495057'
+                }}>Giá Trị</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={{
+                  padding: '15px',
+                  borderBottom: '1px solid #dee2e6',
+                  fontWeight: 'bold',
+                  backgroundColor: '#f8f9fa'
+                }}>Email</td>
+                <td style={{
+                  padding: '15px',
+                  borderBottom: '1px solid #dee2e6'
+                }}>{user.email}</td>
+              </tr>
+              <tr>
+                <td style={{
+                  padding: '15px',
+                  borderBottom: '1px solid #dee2e6',
+                  fontWeight: 'bold',
+                  backgroundColor: '#f8f9fa'
+                }}>Tên</td>
+                <td style={{
+                  padding: '15px',
+                  borderBottom: '1px solid #dee2e6'
+                }}>{user.name}</td>
+              </tr>
+              <tr>
+                <td style={{
+                  padding: '15px',
+                  borderBottom: '1px solid #dee2e6',
+                  fontWeight: 'bold',
+                  backgroundColor: '#f8f9fa'
+                }}>Avatar</td>
+                <td style={{
+                  padding: '15px',
+                  borderBottom: '1px solid #dee2e6'
+                }}>
+                  {user.avatar ? (
+                    <img
+                      src={user.avatar}
+                      alt="Avatar"
+                      style={{
+                        width: '80px',
+                        height: '80px',
+                        borderRadius: '50%',
+                        objectFit: 'cover'
+                      }}
+                    />
+                  ) : (
+                    <span style={{ color: '#6c757d' }}>Chưa có avatar</span>
+                  )}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style={{ textAlign: 'center' }}>
+            <button
+              onClick={() => setIsEditing(true)}
+              style={{
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '6px',
+                fontSize: '16px',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s'
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+            >
+              Chỉnh Sửa Thông Tin
+            </button>
+          </div>
+        </div>
       ) : (
-        <form onSubmit={handleUpdateProfile}>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Nhập tên mới"
-            required
-          />
-          <button type="submit">Lưu</button>
-          <button type="button" onClick={() => setIsEditing(false)}>Hủy</button>
-        </form>
+        <div>
+          <h2 style={{ textAlign: 'center', color: '#333', marginBottom: '20px' }}>
+            Cập Nhật Thông Tin
+          </h2>
+          <form onSubmit={handleUpdateProfile} style={{
+            backgroundColor: '#f8f9fa',
+            padding: '30px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }}>
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{
+                display: 'block',
+                marginBottom: '8px',
+                fontWeight: 'bold',
+                color: '#495057'
+              }}>
+                Tên:
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #ced4da',
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                  boxSizing: 'border-box'
+                }}
+                placeholder="Nhập tên của bạn"
+              />
+            </div>
+
+            <div style={{ marginBottom: '30px' }}>
+              <label style={{
+                display: 'block',
+                marginBottom: '8px',
+                fontWeight: 'bold',
+                color: '#495057'
+              }}>
+                Avatar URL:
+              </label>
+              <input
+                type="url"
+                name="avatar"
+                value={formData.avatar}
+                onChange={handleInputChange}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #ced4da',
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                  boxSizing: 'border-box'
+                }}
+                placeholder="https://example.com/avatar.jpg"
+              />
+            </div>
+
+            <div style={{ textAlign: 'center' }}>
+              <button
+                type="submit"
+                style={{
+                  backgroundColor: '#28a745',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 24px',
+                  borderRadius: '6px',
+                  fontSize: '16px',
+                  cursor: 'pointer',
+                  marginRight: '10px',
+                  transition: 'background-color 0.3s'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#218838'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#28a745'}
+              >
+                Lưu Thay Đổi
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                style={{
+                  backgroundColor: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 24px',
+                  borderRadius: '6px',
+                  fontSize: '16px',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#545b62'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#6c757d'}
+              >
+                Hủy
+              </button>
+            </div>
+          </form>
+        </div>
       )}
     </div>
   );
