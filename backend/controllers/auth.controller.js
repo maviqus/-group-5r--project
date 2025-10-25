@@ -17,7 +17,7 @@ const signup = async (req, res) => {
         await user.save();
 
         // Tạo JWT
-        const token = generateToken(user._id);
+        const token = generateToken(user._id, user.role);
 
         res.status(201).json({ message: 'Đăng ký thành công', token });
     } catch (error) {
@@ -42,7 +42,7 @@ const login = async (req, res) => {
         }
 
         // Tạo JWT
-        const token = generateToken(user._id);
+        const token = generateToken(user._id, user.role);
 
         res.json({ message: 'Đăng nhập thành công', token });
     } catch (error) {

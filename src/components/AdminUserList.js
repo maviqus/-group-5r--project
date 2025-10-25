@@ -9,18 +9,14 @@ const AdminUserList = () => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem('token');
-        console.log('Token:', token);
         const config = {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         };
-        console.log('Fetching users from:', 'https://group-5r-project-9jdh.onrender.com/api/users');
         const { data } = await axios.get('https://group-5r-project-9jdh.onrender.com/api/users', config);
-        console.log('Users data:', data);
         setUsers(data);
       } catch (error) {
-        console.error('Error fetching users:', error);
         setError(error.response?.data?.message || 'Bạn không có quyền');
       }
     };
