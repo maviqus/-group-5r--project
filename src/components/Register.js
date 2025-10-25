@@ -21,7 +21,7 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('https://group-5r-project-9jdh.onrender.com/api/auth/register', formData);
+            const response = await axios.post('https://group-5r-project-9jdh.onrender.com/api/auth/signup', formData);
             setMessage('Đăng ký thành công!');
             // Chuyển hướng đến trang login
             navigate('/login');
