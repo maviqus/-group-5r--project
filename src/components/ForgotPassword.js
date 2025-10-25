@@ -7,6 +7,7 @@ const ForgotPassword = () => {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [resetUrl, setResetUrl] = useState(''); // For demo mode
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -17,12 +18,26 @@ const ForgotPassword = () => {
         try {
             const response = await axios.post(
                 'https://group-5r-project-9jdh.onrender.com/api/auth/forgot-password',
-                { email }
+                { email },
+                { timeout: 30000 } // 30 seconds timeout
             );
             setMessage(response.data.message);
+            
+            // Check if demo mode (response includes resetUrl)
+            if (response.data.resetUrl) {
+                setResetUrl(response.data.resetUrl);
+            }
+            
             setEmail('');
         } catch (err) {
-            setError(err.response?.data?.message || 'Có lỗi xảy ra');
+            console.error('Forgot password error:', err);
+            if (err.code === 'ECONNABORTED') {
+                setError('Request timeout. Backend có thể đang khởi động, vui lòng thử lại sau 30 giây.');
+            } else if (err.response?.status === 500) {
+                setError('Lỗi server: ' + (err.response?.data?.error || 'Vui lòng kiểm tra Render logs'));
+            } else {
+                setError(err.response?.data?.message || 'Có lỗi xảy ra: ' + err.message);
+            }
         } finally {
             setLoading(false);
         }
@@ -87,6 +102,33 @@ const ForgotPassword = () => {
                         textAlign: 'center'
                     }}>
                         {message}
+                    </div>
+                )}
+
+                {resetUrl && (
+                    <div style={{
+                        padding: '15px',
+                        backgroundColor: '#fff3cd',
+                        border: '1px solid #ffc107',
+                        borderRadius: '4px',
+                        marginBottom: '15px'
+                    }}>
+                        <p style={{ margin: '0 0 10px 0', fontWeight: 'bold', color: '#856404' }}>
+                            🎯 Demo Mode: Click link bên dưới để reset password
+                        </p>
+                        <a 
+                            href={resetUrl}
+                            style={{
+                                color: '#007bff',
+                                wordBreak: 'break-all',
+                                textDecoration: 'underline'
+                            }}
+                        >
+                            {resetUrl}
+                        </a>
+                        <p style={{ margin: '10px 0 0 0', fontSize: '12px', color: '#856404' }}>
+                            ⏰ Link có hiệu lực trong 10 phút
+                        </p>
                     </div>
                 )}
 

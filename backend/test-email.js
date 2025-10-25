@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 
 async function testEmail() {
     console.log('🧪 Testing Email Configuration...\n');
-    
+
     console.log('Environment Variables:');
     console.log('EMAIL_USER:', process.env.EMAIL_USER);
     console.log('EMAIL_PASSWORD:', process.env.EMAIL_PASSWORD ? '***' + process.env.EMAIL_PASSWORD.slice(-4) : 'NOT SET');
@@ -50,12 +50,12 @@ async function testEmail() {
         console.log('');
         console.log('🎉 Email config is working correctly!');
         console.log('📬 Check your inbox:', process.env.EMAIL_USER);
-        
+
     } catch (error) {
         console.error('❌ Email test failed!');
         console.error('Error:', error.message);
         console.error('');
-        
+
         if (error.code === 'EAUTH') {
             console.log('💡 Suggestions:');
             console.log('1. Check EMAIL_USER is correct');
