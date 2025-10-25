@@ -77,12 +77,17 @@ const forgotPassword = async (req, res) => {
         // Tạo reset URL (sử dụng HashRouter)
         const resetUrl = `${process.env.FRONTEND_URL}/#/reset-password/${resetToken}`;
 
-        // Cấu hình nodemailer
+        // Cấu hình nodemailer với secure connection
         const transporter = nodemailer.createTransport({
-            service: 'gmail',
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // true for 465, false for other ports
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASSWORD
+            },
+            tls: {
+                rejectUnauthorized: false
             }
         });
 
