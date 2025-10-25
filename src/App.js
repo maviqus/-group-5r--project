@@ -3,7 +3,9 @@ import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Register from './components/Register';
 import Login from './components/Login';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import Profile from './components/Profile';
+import AdminUserList from './components/AdminUserList';
 
 function Dashboard() {
     const token = localStorage.getItem('token');
@@ -40,7 +42,8 @@ function App() {
                     <Link to="/" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Home</Link>
                     <Link to="/register" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Đăng ký</Link>
                     <Link to="/login" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Đăng nhập</Link>
-                    <Link to="/profile" style={{ textDecoration: 'none', color: '#007bff' }}>Profile</Link>
+                    <Link to="/profile" style={{ marginRight: '20px', textDecoration: 'none', color: '#007bff' }}>Profile</Link>
+                    <Link to="/admin" style={{ textDecoration: 'none', color: '#007bff' }}>Admin</Link>
                 </nav>
                 <Routes>
                     <Route path="/" element={
@@ -57,6 +60,11 @@ function App() {
                         <ProtectedRoute>
                             <Profile />
                         </ProtectedRoute>
+                    } />
+                    <Route path="/admin" element={
+                        <AdminRoute>
+                            <AdminUserList />
+                        </AdminRoute>
                     } />
                 </Routes>
             </div>
