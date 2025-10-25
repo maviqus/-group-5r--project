@@ -3,12 +3,11 @@ FROM node:18-alpine
 # Create app directory
 WORKDIR /usr/src/app
 
-# Install dependencies
+# Install dependencies first
 COPY package*.json ./
-RUN npm install --production
+RUN npm install --only=production
 
-# Force new build
-# Copy source
+# Copy application source
 COPY . .
 
 ENV PORT=4000
