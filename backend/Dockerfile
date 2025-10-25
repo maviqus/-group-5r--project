@@ -1,16 +1,19 @@
+# Use Node.js 18 Alpine image
 FROM node:18-alpine
 
-# Create app directory
+# Set working directory
 WORKDIR /usr/src/app
 
-# Install dependencies first
+# Copy package files and install dependencies
 COPY package*.json ./
-RUN npm install --only=production
+RUN npm install && npm prune --production
 
-# Copy application source
+# Copy application source code
 COPY . .
 
+# Set environment variables
 ENV PORT=4000
 EXPOSE 4000
 
+# Start the application
 CMD ["node", "server.js"]
