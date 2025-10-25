@@ -7,6 +7,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install --production
 
+# Force new build
 # Copy source
 COPY . .
 
