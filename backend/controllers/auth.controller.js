@@ -2,6 +2,7 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 const generateToken = require('../utils/generateToken');
 
 const signup = async (req, res) => {
@@ -77,92 +78,142 @@ const forgotPassword = async (req, res) => {
         // Tạo reset URL (sử dụng HashRouter)
         const resetUrl = `${process.env.FRONTEND_URL}/#/reset-password/${resetToken}`;
 
-        // Check if running on Render (production) - Skip actual email sending due to SMTP port blocking
-        if (process.env.RENDER === 'true' || process.env.NODE_ENV === 'production') {
-            console.log('===========================================');
-            console.log('📧 EMAIL WOULD BE SENT (Mock for Render):');
-            console.log('To:', user.email);
-            console.log('Subject: 🔐 Yêu cầu đặt lại mật khẩu');
-            console.log('Reset URL:', resetUrl);
-            console.log('Token expires in: 10 minutes');
-            console.log('===========================================');
+        // Gửi email bằng SendGrid (works on Render)
+        if (process.env.SENDGRID_API_KEY) {
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY);
             
-            // Return success without actually sending email
-            return res.status(200).json({ 
-                message: 'Email đặt lại mật khẩu đã được gửi',
-                resetUrl: resetUrl, // Include URL in response for testing
-                note: 'Demo mode: Email not actually sent. Use the resetUrl directly.'
-            });
-        }
-
-        // For local development: Actually send email
-        const transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 587,
-            secure: false,
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASSWORD
-            },
-            tls: {
-                rejectUnauthorized: false
-            }
-        });
-
-        const mailOptions = {
-            from: `"Auth App" <${process.env.EMAIL_USER}>`,
-            to: user.email,
-            subject: '🔐 Yêu cầu đặt lại mật khẩu - Auth App',
-            html: `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <style>
-                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-                        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-                        .button { display: inline-block; padding: 15px 30px; background: #667eea; color: white !important; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
-                        .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
-                        .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }
-                    </style>
-                </head>
-                <body>
-                    <div class="container">
-                        <div class="header">
-                            <h1>🔐 Đặt lại mật khẩu</h1>
-                        </div>
-                        <div class="content">
-                            <p>Xin chào <strong>${user.name}</strong>,</p>
-                            <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>
-                            <p>Click vào nút bên dưới để đặt lại mật khẩu:</p>
-                            <p style="text-align: center;">
-                                <a href="${resetUrl}" class="button">Đặt lại mật khẩu</a>
-                            </p>
-                            <p>Hoặc copy link sau vào trình duyệt:</p>
-                            <p style="word-break: break-all; background: #fff; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                                <a href="${resetUrl}">${resetUrl}</a>
-                            </p>
-                            <div class="warning">
-                                <strong>⚠️ Lưu ý:</strong>
-                                <ul>
-                                    <li>Link này chỉ có hiệu lực trong <strong>10 phút</strong></li>
-                                    <li>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này</li>
-                                    <li>Không chia sẻ link này với bất kỳ ai</li>
-                                </ul>
+            const msg = {
+                to: user.email,
+                from: process.env.EMAIL_USER, // Must be verified sender in SendGrid
+                subject: '🔐 Yêu cầu đặt lại mật khẩu - Auth App',
+                html: `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <style>
+                            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+                            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+                            .button { display: inline-block; padding: 15px 30px; background: #667eea; color: white !important; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+                            .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+                            .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <div class="header">
+                                <h1>🔐 Đặt lại mật khẩu</h1>
+                            </div>
+                            <div class="content">
+                                <p>Xin chào <strong>${user.name}</strong>,</p>
+                                <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>
+                                <p>Click vào nút bên dưới để đặt lại mật khẩu:</p>
+                                <p style="text-align: center;">
+                                    <a href="${resetUrl}" class="button">Đặt lại mật khẩu</a>
+                                </p>
+                                <p>Hoặc copy link sau vào trình duyệt:</p>
+                                <p style="word-break: break-all; background: #fff; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                    <a href="${resetUrl}">${resetUrl}</a>
+                                </p>
+                                <div class="warning">
+                                    <strong>⚠️ Lưu ý:</strong>
+                                    <ul>
+                                        <li>Link này chỉ có hiệu lực trong <strong>10 phút</strong></li>
+                                        <li>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này</li>
+                                        <li>Không chia sẻ link này với bất kỳ ai</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="footer">
+                                <p>Email này được gửi từ Auth App</p>
+                                <p>Nếu bạn cần hỗ trợ, vui lòng liên hệ: ${process.env.EMAIL_USER}</p>
                             </div>
                         </div>
-                        <div class="footer">
-                            <p>Email này được gửi từ Auth App</p>
-                            <p>Nếu bạn cần hỗ trợ, vui lòng liên hệ: ${process.env.EMAIL_USER}</p>
-                        </div>
-                    </div>
-                </body>
-                </html>
-            `
-        };
+                    </body>
+                    </html>
+                `
+            };
 
-        await transporter.sendMail(mailOptions);
+            await sgMail.send(msg);
+            console.log('✅ Email sent successfully via SendGrid to:', user.email);
+            
+            res.status(200).json({ message: 'Email đặt lại mật khẩu đã được gửi' });
+        } else {
+            // Fallback: Use nodemailer for local development
+            console.log('⚠️ SENDGRID_API_KEY not found, using nodemailer...');
+            
+            const transporter = nodemailer.createTransport({
+                host: 'smtp.gmail.com',
+                port: 587,
+                secure: false,
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASSWORD
+                },
+                tls: {
+                    rejectUnauthorized: false
+                }
+            });
+
+            const mailOptions = {
+                from: `"Auth App" <${process.env.EMAIL_USER}>`,
+                to: user.email,
+                subject: '🔐 Yêu cầu đặt lại mật khẩu - Auth App',
+                html: `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <style>
+                            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+                            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+                            .button { display: inline-block; padding: 15px 30px; background: #667eea; color: white !important; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+                            .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+                            .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <div class="header">
+                                <h1>🔐 Đặt lại mật khẩu</h1>
+                            </div>
+                            <div class="content">
+                                <p>Xin chào <strong>${user.name}</strong>,</p>
+                                <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>
+                                <p>Click vào nút bên dưới để đặt lại mật khẩu:</p>
+                                <p style="text-align: center;">
+                                    <a href="${resetUrl}" class="button">Đặt lại mật khẩu</a>
+                                </p>
+                                <p>Hoặc copy link sau vào trình duyệt:</p>
+                                <p style="word-break: break-all; background: #fff; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                    <a href="${resetUrl}">${resetUrl}</a>
+                                </p>
+                                <div class="warning">
+                                    <strong>⚠️ Lưu ý:</strong>
+                                    <ul>
+                                        <li>Link này chỉ có hiệu lực trong <strong>10 phút</strong></li>
+                                        <li>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này</li>
+                                        <li>Không chia sẻ link này với bất kỳ ai</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="footer">
+                                <p>Email này được gửi từ Auth App</p>
+                                <p>Nếu bạn cần hỗ trợ, vui lòng liên hệ: ${process.env.EMAIL_USER}</p>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                `
+            };
+
+            await transporter.sendMail(mailOptions);
+            console.log('✅ Email sent successfully via Gmail SMTP to:', user.email);
+            
+            res.status(200).json({ message: 'Email đặt lại mật khẩu đã được gửi' });
+        }
 
         res.status(200).json({ message: 'Email đặt lại mật khẩu đã được gửi' });
     } catch (error) {
